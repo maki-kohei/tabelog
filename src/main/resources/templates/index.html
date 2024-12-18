@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <head>
+        <div th:replace="~{fragment :: meta}"></div>   
+        <div th:replace="~{fragment :: styles}"></div>	
+        <title>nagoyamesi</title>	
+    </head>
+    <body>
+        <div class="nagoyamesi-wrapper">
+            <!-- ヘッダー -->
+            <div th:replace="~{fragment :: header}"></div>
+            <main>
+                <div class="container pt-4 pb-5 samuraitravel-container">
+                    <div th:if="${param.loggedIn}" class="alert alert-info">
+                        ログインしました。
+                    </div>  
+                    <div th:if="${param.loggedOut}" class="alert alert-info">
+                        ログアウトしました。
+                    </div>
+                    <div th:if="${successMessage}" class="alert alert-info">
+                        <span th:text="${successMessage}"></span>
+                    </div> 
+                </div>
+                <div class="d-flex justify-content-center">                                            
+                    <form method="get" th:action="@{/restaurants}" class="mb-5 nagoyamesi-search-form">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="keyword" th:value="${keyword}" placeholder="店舗名・カテゴリ名">
+                            <button type="submit" class="btn text-white shadow-sm nagoyamesi-btn">検索</button> 
+                        </div>               
+                    </form>                        
+                </div>                                                                                                  
+                <h2 class="text-center mb-3">評価の高い店舗</h2>
+                <div class="row row-cols-lg-3 row-cols-2 g-3 mb-5">                                        
+                    <div class="col" th:each="restaurant : ${topRatedRestaurants}">
+                        <a th:href="@{/restaurants/__${restaurant.getId()}__}" class="link-dark nagoyamesi-card-link">
+                            <div class="card h-100">                                                                        
+                                <img th:if="${restaurant.getImageName()}" th:src="@{/storage/__${restaurant.getImageName()}__}" class="card-img-top nagoyamesi-vertical-card-image" alt="店舗画像">                                     
+                                <img th:unless="${restaurant.getImageName()}" th:src="@{/images/noImage.png}" class="card-img-top nagoyamesi-vertical-card-image" alt="NO IMAGE">
+                                <div class="card-body">                                    
+                                    <h3 class="card-title" th:text="${restaurant.getName()}"></h3>
+                                    <h4 th:text="${restaurant.getCategory().getName()}"></h4>
+                                    <p class="card-text">
+                                        <span th:if="${averageRatings[restaurant.id] != null}">
+                                            レビュー<span th:text="${#numbers.formatDecimal(averageRatings[restaurant.id], 1, 1)}">点</span>
+                                            (<span th:text="${reviewCounts[restaurant.id]} + '件'">レビュー件数</span>)
+                                        </span>
+                                        <span th:if="${averageRatings[restaurant.id] == null}">レビューはまだありません</span>
+                                    </p>
+                                    <p class="card-text mb-1">
+                                        <small class="text-muted" th:text="${restaurant.getAddress()}"></small>
+                                    </p>
+                                </div>
+                            </div>    
+                        </a>            
+                    </div>                                               
+                </div>                                                                                                
+                <h2 class="text-center mb-3">新規掲載店舗</h2>
+                <div class="row row-cols-lg-3 row-cols-2 g-3 mb-5">                                        
+                    <div class="col" th:each="restaurant : ${restaurantList}">
+                        <a th:href="@{/restaurants/__${restaurant.getId()}__}" class="link-dark nagoyamesi-card-link">
+                            <div class="card h-100">                                                                        
+                                <img th:if="${restaurant.getImageName()}" th:src="@{/storage/__${restaurant.getImageName()}__}" class="card-img-top nagoyamesi-vertical-card-image" alt="店舗画像">                                     
+                                <img th:unless="${restaurant.getImageName()}" th:src="@{/images/noImage.png}" class="card-img-top nagoyamesi-vertical-card-image" alt="NO IMAGE">
+                                <div class="card-body">                                    
+                                    <h3 class="card-title" th:text="${restaurant.getName()}"></h3>
+                                    <h4 th:text="${restaurant.getCategory().getName()}"></h4>
+                                    <p class="card-text">
+                                        <span th:if="${averageRatings[restaurant.id] != null}">
+                                           レビュー <span th:text="${#numbers.formatDecimal(averageRatings[restaurant.id], 1, 1)}">点</span>
+                                            (<span th:text="${reviewCounts[restaurant.id]} + '件'">レビュー件数</span>)
+                                        </span>
+                                        <span th:if="${averageRatings[restaurant.id] == null}">レビューはまだありません</span>
+                                    </p>
+                                    <p class="card-text mb-1">
+                                        <small class="text-muted" th:text="${restaurant.getAddress()}"></small>
+                                    </p>
+                                </div>
+                            </div>    
+                        </a>            
+                    </div>                                               
+                </div>
+            </main>
+            <!-- フッター -->
+            <div th:replace="~{fragment :: footer}"></div>
+        </div>    
+        <div th:replace="~{fragment :: scripts}"></div>
+    </body>
+</html>
